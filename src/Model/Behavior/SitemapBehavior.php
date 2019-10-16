@@ -30,6 +30,7 @@ class SitemapBehavior extends Behavior {
 		'conditions' => [],
 		'order' => [],
 		'fields' => [],
+		'urlForEntity' => [],
 		'implementedMethods' => [
 			'getUrl' => 'returnUrlForEntity',
 		],
@@ -70,16 +71,15 @@ class SitemapBehavior extends Behavior {
 	 * @return string Returns the URL string.
 	 */
 	public function returnUrlForEntity(Entity $entity) {
-		return Router::url(
-			[
-				'plugin' => null,
-				'prefix' => null,
-				'controller' => $this->_table->alias(),
-				'action' => 'view',
-				$entity->{$this->_table->primaryKey()},
-			],
-			true
-		);
+		$url = array_merge([
+			'plugin' => null,
+			'prefix' => null,
+			'controller' => $this->_table->alias(),
+			'action' => 'view',
+			$entity->{$this->_table->primaryKey()},
+		], $this->_config['urlForEntity']);
+
+		return Router::url($url, true);
 	}
 
 	/**
