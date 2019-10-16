@@ -30,6 +30,7 @@ class SitemapBehavior extends Behavior {
 		'conditions' => [],
 		'order' => [],
 		'fields' => [],
+		'urlParamField' => null,
 		'urlForEntity' => [],
 		'implementedMethods' => [
 			'getUrl' => 'returnUrlForEntity',
@@ -62,6 +63,10 @@ class SitemapBehavior extends Behavior {
 	 */
 	public function initialize(array $config) {
 		parent::initialize($config);
+		
+		if ($this->_config['urlParamField'] === null) {
+			$this->_config['urlParamField'] = $this->_table->primaryKey();
+		}
 	}
 
 	/**
@@ -76,7 +81,7 @@ class SitemapBehavior extends Behavior {
 			'prefix' => null,
 			'controller' => $this->_table->alias(),
 			'action' => 'view',
-			$entity->{$this->_table->primaryKey()},
+			$entity->{$this->_config['urlParamField']},
 		], $this->_config['urlForEntity']);
 
 		return Router::url($url, true);
