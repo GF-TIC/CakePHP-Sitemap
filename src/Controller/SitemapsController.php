@@ -33,7 +33,7 @@ class SitemapsController extends AppController {
 		foreach ($tablesToList as $table) {
 			$tableInstance = $this->loadModel($table);
 			$data[$table] = $tableInstance->find('forSitemap');
-		}	
+		}
 
 		$this->set('data', $data);
 		$this->set('_serialize', false);

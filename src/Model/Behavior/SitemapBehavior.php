@@ -64,8 +64,8 @@ class SitemapBehavior extends Behavior {
 	public function initialize(array $config) {
 		parent::initialize($config);
 		
-		if ($this->_config['urlParamField'] === null) {
-			$this->_config['urlParamField'] = $this->_table->primaryKey();
+		if ($this->getConfig('urlParamField') === null) {
+			$this->setConfig('urlParamField', $this->getTable()->getPrimaryKey());
 		}
 	}
 
@@ -79,10 +79,10 @@ class SitemapBehavior extends Behavior {
 		$url = array_merge([
 			'plugin' => null,
 			'prefix' => null,
-			'controller' => $this->_table->alias(),
+			'controller' => $this->getTable()->getAlias(),
 			'action' => 'view',
-			$entity->{$this->_config['urlParamField']},
-		], $this->_config['urlForEntity']);
+			$entity->{$this->getConfig('urlParamField')},
+		], $this->getConfig('urlForEntity'));
 
 		return Router::url($url, true);
 	}
@@ -96,15 +96,15 @@ class SitemapBehavior extends Behavior {
 	 */
 	public function findSitemapRecords(Query $query, array $options) {
 		$query = $query
-			->where($this->_config['conditions'])
-			->cache("sitemap_{$query->repository()->alias()}", $this->_config['cacheConfigKey'])
-			->order($this->_config['order'])
+			->where($this->getConfig('conditions'))
+			->cache("sitemap_{$query->getRepository()->getAlias()}", $this->getConfig('cacheConfigKey'))
+			->order($this->getConfig('order'))
 			->formatResults(function ($results) {
 				return $this->mapResults($results);
 			});
 
-		if (!empty($this->_config['fields'])) {
-			$query = $query->select($this->_config['fields']);
+		if (!empty($this->getConfig('fields'))) {
+			$query = $query->select($this->getConfig('fields'));
 		}
 
 		return $query;
@@ -132,10 +132,10 @@ class SitemapBehavior extends Behavior {
 	 * @return \Cake\ORM\Entity Returns the modified entity.
 	 */
 	public function mapEntity(Entity $entity) {
-		$entity['_loc'] = $this->_table->getUrl($entity);
-		$entity['_lastmod'] = $entity->{$this->_config['lastmod']};
-		$entity['_changefreq'] = $this->_config['changefreq'];
-		$entity['_priority'] = $this->_config['priority'];
+		$entity['_loc'] = $this->getTable()->getUrl($entity);
+		$entity['_lastmod'] = $entity->{$this->getConfig('lastmod')};
+		$entity['_changefreq'] = $this->getConfig('changefreq');
+		$entity['_priority'] = $this->getConfig('priority');
 
 		return $entity;
 	}
