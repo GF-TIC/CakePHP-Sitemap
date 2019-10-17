@@ -8,6 +8,7 @@
  */
 namespace Sitemap\Lib\Iterators;
 
+use DirectoryIterator;
 use FilterIterator;
 
 /**
