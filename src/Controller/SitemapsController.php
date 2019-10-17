@@ -49,7 +49,7 @@ class SitemapsController extends AppController {
 	 *
 	 * @return array
 	 */
-	public function listPages()
+	protected function listPages()
 	{
 		if (!Configure::read('Sitemap.pages.enable', true)) {
 			return null;
