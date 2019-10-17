@@ -18,6 +18,11 @@ class SitemapsController extends AppController {
 	 * @return void
 	 */
 	public function index() {
+
+		if (!$this->isXmlRequest()) {
+			return $this->redirect(['_ext' => 'xml']);
+		}
+
 		$tablesToList = [];
 		$data = [];
 
@@ -39,6 +44,11 @@ class SitemapsController extends AppController {
 		$this->set('_serialize', false);
 	}
 
+	/**
+	 * Finds all the files on src/Template/Pages
+	 *
+	 * @return array
+	 */
 	public function listPages()
 	{
 		if (!Configure::read('Sitemap.pages.enable', true)) {
@@ -60,5 +70,10 @@ class SitemapsController extends AppController {
 		}
 
 		return $pagesToList;
+	}
+
+	protected function isXmlRequest()
+	{
+		return strtolower($this->getRequest()->getParam('_ext')) === 'xml';
 	}
 }
