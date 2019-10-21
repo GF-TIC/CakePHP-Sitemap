@@ -30,6 +30,7 @@ class SitemapBehavior extends Behavior {
 		'conditions' => [],
 		'order' => [],
 		'fields' => [],
+		'finders' => [],
 		'urlParamField' => null,
 		'urlForEntity' => [],
 		'implementedMethods' => [
@@ -95,7 +96,7 @@ class SitemapBehavior extends Behavior {
 	 * @return \Cake\ORM\Query Returns the modified Query object.
 	 */
 	public function findSitemapRecords(Query $query, array $options) {
-		$query = $query
+		$query
 			->where($this->getConfig('conditions'))
 			->cache("sitemap_{$query->getRepository()->getAlias()}", $this->getConfig('cacheConfigKey'))
 			->order($this->getConfig('order'))
@@ -104,7 +105,13 @@ class SitemapBehavior extends Behavior {
 			});
 
 		if (!empty($this->getConfig('fields'))) {
-			$query = $query->select($this->getConfig('fields'));
+			$query->select($this->getConfig('fields'));
+		}
+
+		if (!empty($this->getConfig('finders'))) {
+			foreach ($this->getConfig('finders') as $finder) {
+				$query->find($finder);
+			}
 		}
 
 		return $query;
@@ -114,12 +121,12 @@ class SitemapBehavior extends Behavior {
 	 * Format Results method to take the ResultSetInterface and map it to add
 	 * calculated fields for the Sitemap.
 	 *
-	 * @param \Cake\Datasource\ResultSetInterface $results The results of a Query
+	 * @param \Cake\Datasource\ResultSetInterface|Cake\Collection\Iterator\ReplaceIterator $results The results of a Query
 	 * operation.
 	 * @return \Cake\Collection\CollectionInterface Returns the modified collection
 	 * of Results.
 	 */
-	public function mapResults(ResultSetInterface $results) {
+	public function mapResults($results) {
 		return $results->map(function ($entity) {
 			return $this->mapEntity($entity);
 		});
