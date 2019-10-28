@@ -5,10 +5,8 @@
 namespace Sitemap\Controller;
 
 use Cake\Core\Configure;
-use Cake\Event\Event;
 use Sitemap\Controller\AppController;
 use Sitemap\Lib\Iterators\PagesIterator;
-use GFTIC\CakeTools\I18n\MultiLanguage;
 
 /**
  * \Sitemap\Controller\SitemapsController
@@ -25,7 +23,6 @@ class SitemapsController extends AppController
 		if (!$this->isXmlRequest()) {
 			return $this->redirect(['_ext' => 'xml']);
 		}
-		$this->MultiLanguage->initLanguage(MultiLanguage::VIEW_FRONTEND);
 
 		$tablesToList = [];
 		$data = [];
