@@ -11,14 +11,15 @@ use Sitemap\Lib\Iterators\PagesIterator;
 /**
  * \Sitemap\Controller\SitemapsController
  */
-class SitemapsController extends AppController {
+class SitemapsController extends AppController
+{
 	/**
 	 * Index page for the sitemap.
 	 *
 	 * @return void
 	 */
-	public function index() {
-
+	public function index()
+	{
 		if (!$this->isXmlRequest()) {
 			return $this->redirect(['_ext' => 'xml']);
 		}
@@ -72,6 +73,11 @@ class SitemapsController extends AppController {
 		return $pagesToList;
 	}
 
+	/**
+	 * Checks if the request extension is xml
+	 *
+	 * @return array
+	 */
 	protected function isXmlRequest()
 	{
 		return strtolower($this->getRequest()->getParam('_ext')) === 'xml';
