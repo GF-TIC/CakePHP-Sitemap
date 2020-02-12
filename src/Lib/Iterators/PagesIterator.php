@@ -6,6 +6,10 @@
  */
 namespace Sitemap\Lib\Iterators;
 
+use Cake\Utility\Inflector;
+use Cake\Routing\Router;
+use Cake\I18n\Time;
+
 /**
  * \Sitemap\Lib\Iterators\PagesIterator
  */
@@ -30,14 +34,6 @@ class PagesIterator extends ExtFilteredDirIterator {
 	private $depth = null;
 
 	/**
-	 * Stores $this->request->webroot from the calling Controller. Used
-	 * when generating individual record arrays.
-	 *
-	 * @var string
-	 */
-	private $webroot = null;
-
-	/**
 	 * __construct
 	 *
 	 * Creates a new ExtFilteredDirIterator (which is based on a
@@ -50,17 +46,12 @@ class PagesIterator extends ExtFilteredDirIterator {
 	 *										between the image root folder and the
 	 *										current directory represented by
 	 *										basename($path).
-	 * @param string	$webroot			The relative Cake webroot as returned
-	 *										in a Controller by $this->request->webroot.
-	 *										(There is no static access to this property,
-	 *										hence having to pass it in.)
 	 * @param array	$allowedExtensions	An optional array of file extensions
 	 *										to filter the resulting directory
 	 *										list against.
 	 */
-	public function __construct($path, $depth, $webroot, $allowedExtensions = null) {
+	public function __construct($path, $depth, $allowedExtensions = null) {
 		$this->depth = $depth;
-		$this->webroot = $webroot;
 		if (is_array($allowedExtensions)) {
 			$this->allowed = $allowedExtensions; // Save this to pass into subfolder count calculations.
 		}
@@ -114,7 +105,7 @@ class PagesIterator extends ExtFilteredDirIterator {
 		$fileinfo = parent::current();
 		$depth = $this->depth;
 		$parent = implode('/', $depth);
-		$url = str_replace(WWW_ROOT, $this->webroot, Router::url(array_merge(
+		$url = Router::url(array_merge(
 			[
 				'plugin' => false,
 				'controller' => 'pages',
@@ -122,14 +113,14 @@ class PagesIterator extends ExtFilteredDirIterator {
 			],
 			$depth,
 			[$fileinfo->getBasename('.ctp')]
-		)));
+		), true);
 		$page = [
 			'basename' => $fileinfo->getFilename(),
 			'filename' => ltrim($parent . '/' . $fileinfo->getFilename(), '/'),
 			'title' => Inflector::humanize($fileinfo->getBasename('.ctp')),
-			'url' => str_replace($this->webroot, '/', $url),
+			'url' => $url,
 			'bytes' => $fileinfo->getSize(),
-			'modified' => $fileinfo->getMTime(),
+			'modified' => Time::parse($fileinfo->getMTime()),
 		];
 		if ($fileinfo->isDir()) { // Override the target URL and get a count of the children in subdirs.
 			$page['url'] = array_merge(
